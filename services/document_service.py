@@ -1,4 +1,6 @@
 from fastapi import UploadFile
+from services.converter_service import detect_document_type, image_to_images, convert_pdf_to_images
+import uuid
 
 UPLOAD_DIR = Path("uploaded_files")
 
@@ -10,7 +12,8 @@ async def save_file(
         exist_ok=True
     )
 
-    file_path = UPLOAD_DIR / file.filename
+    unique_name = f"{uuid.uuid4()}_{file.filename}"
+    file_path = UPLOAD_DIR / unique_name
 
     content = await file.read()
 
@@ -32,9 +35,17 @@ async def process_document(
         return {
             "error": "Unsupported file type"
         }
-    saved_path= save_file(file)
+    saved_path= await save_file(file)
+
+    document_type = await detect_document_type(saved_path)
+
+    if document_type == DocumentType.PDF:
+      return await convert_pdf_to_images(file_path)
+
+    elif document_type == DocumentType.IMAGE:
+        return await image_to_images(file_path)
 
     return {
-      "File name": file.filename,
-      "saved path":saved_path
+        "filename":file.filename,
+        "file_type": document_type
     }
