@@ -7,5 +7,5 @@ from services.ocr_service import extract_text
 
 # image[0].save("converted_image/page1.png","PNG")
 
-print(extract_text("converted_image/page1.png"))
+print(extract_text("converted_images/page1.png"))
 

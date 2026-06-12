@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OCR Upload</title>
+</head>
+<body>
+
+<h2>Upload Document</h2>
+
+<input type="file" id="file">
+
+<button onclick="uploadFile()">
+    Upload
+</button>
+
+<pre id="result"></pre>
+
+<script>
+async function uploadFile() {
+
+    const fileInput =
+        document.getElementById("file");
+
+    const formData =
+        new FormData();
+
+    formData.append(
+        "file",
+        fileInput.files[0]
+    );
+
+    const response =
+        await fetch(
+            "http://127.0.0.1:8000/documents/upload",
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
+    const data =
+        await response.json();
+
+    document.getElementById(
+        "result"
+    ).textContent =
+        JSON.stringify(data, null, 2);
+}
+</script>
+
+</body>
+</html>
